@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>wct-browserstack-demo by tony19-sandbox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">wct-browserstack-demo</h1>
+      <h2 class="project-tagline">Demonstrates Web Component Tester with Browserstack</h2>
+      <a href="https://github.com/tony19-sandbox/wct-browserstack-demo" class="btn">View on GitHub</a>
+      <a href="https://github.com/tony19-sandbox/wct-browserstack-demo/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/tony19-sandbox/wct-browserstack-demo/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h3>
+<a id="about" class="anchor" href="#about" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About</h3>
+
+<p>This project demonstrates <a href="https://github.com/Polymer/web-component-tester">Web Component Tester 4.2.2</a> with <a href="http://browserstack.com">BrowserStack</a>.</p>
+
+<h3>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h3>
+
+<ol>
+<li><p>Edit <code>default-browserstack-browsers.json</code> to select the browsers to be tested. You could use the <a href="https://www.browserstack.com/automate/node#setting-os-and-browser">BrowserStack Config Generator</a>.</p></li>
+<li>
+<p>From a terminal, run:</p>
+
+<pre><code>$ BROWSERSTACK_KEY=... BROWSERSTACK_USER=... gulp wct:browserstack
+</code></pre>
+
+<p>where:</p>
+
+<ul>
+<li>
+<code>BROWSERSTACK_KEY</code> is your BrowserStack access key from your profile settings</li>
+<li>
+<code>BROWSERSTACK_USER</code> is your BrowserStack username</li>
+</ul>
+
+<p>The output looks something like this:</p>
+
+<pre><code>$ BROWSERSTACK_USER=... BROWSERSTACK_KEY=... gulp wct:browserstack
+[21:27:24] Using gulpfile ~/src/polymer/wct-browserstack-demo/gulpfile.js
+[21:27:24] Starting 'wct:browserstack'...
+[21:27:24] Starting 'starttunnel'...
+[21:27:25] Finished 'starttunnel' after 1.25 s
+[21:27:25] Starting 'wct:sauce'...
+Web server running on port 2000 and serving from /Users/tony/src/polymer/wct-browserstack-demo
+chrome                   Beginning tests via http://localhost:2000/components/wct-browserstack-demo/generated-index.html?cli_browser_id=0
+chrome                   Tests passed
+Test run ended with great success
+
+chrome (4/0/0)
+[21:27:48] Finished 'wct:sauce' after 23 s
+[21:27:48] Starting 'stoptunnel'...
+[21:27:49] Finished 'stoptunnel' after 489 ms
+[21:27:49] Finished 'wct:browserstack' after 25 s
+</code></pre>
+
+<p><strong>NOTE:</strong> WCT uses <code>"wct:sauce"</code> as the task name to start the tests. It's not actually running tests on SauceLabs in this case.</p>
+</li>
+</ol>
+
+<h3>
+<a id="notes" class="anchor" href="#notes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Notes</h3>
+
+<ul>
+<li>Based on <a href="https://github.com/PolymerElements/polymer-starter-kit/releases/tag/v1.3.0">Polymer Starter Kit 1.3.0</a> with these changes:
+
+<ul>
+<li>Added <code>default-browserstack-browsers.json</code>
+</li>
+<li>Added Gulp task (<code>wct:browserstack</code>)</li>
+<li>Added dependency on <a href="https://www.npmjs.com/package/gulp-browserstack"><code>gulp-browserstack</code></a>
+</li>
+<li>Modified <code>wct.conf.js</code> to setup BrowserStack</li>
+</ul>
+</li>
+<li>Tests are run serially (same as SauceLabs tests) even though BrowserStack supports parallel tests</li>
+</ul>
+
+<h3>
+<a id="manual-testing" class="anchor" href="#manual-testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Manual Testing</h3>
+
+<p>Prefer the hard way?</p>
+
+<ol>
+<li>Download the <a href="https://www.browserstack.com/local-testing#command-line">BrowserStack local binary</a>.</li>
+<li>
+<p>From a terminal, run:</p>
+
+<pre><code>$ ./BrowserStackLocal ${access_key}
+</code></pre>
+
+<p>The tunnel will stay open for the lifetime of this command (CTRL-C to stop).</p>
+</li>
+<li>
+<p>In <code>wct.conf.js</code>, modify the <code>ret</code> object so that it contains an array named <code>activeBrowsers</code>. Each array entry must at least contain the following properties:</p>
+
+<pre><code> {
+   browserName: '...',
+   platform: '...',
+   url: 'http://${BROWSERSTACK_USER}:${BROWSERSTACK_KEY}@hub.browserstack.com/wd/hub',
+   'browserstack.local': 'true'
+ }
+</code></pre>
+
+<p>Example:</p>
+
+<pre><code>var ret = {
+  'suites': ['app/test'],
+  'webserver': {
+    'pathMappings': []
+  },
+  activeBrowsers: [
+    {
+      browserName: "chrome",
+      platform: "windows",
+      'browserstack.local' : 'true',
+      url: 'http://johndoe:abcde0123456789abcde@hub.browserstack.com/wd/hub'
+    },
+    {
+      'browserName' : 'android',
+      'platform' : 'ANDROID',
+      'device' : 'Samsung Galaxy S5',
+      'browserstack.local' : 'true',
+      url: 'http://johndoe:abcde0123456789abcde@hub.browserstack.com/wd/hub'
+    }
+  ]
+};
+</code></pre>
+</li>
+<li>
+<p>From a terminal, run:</p>
+
+<pre><code>$ BROWSERSTACK_KEY=... BROWSERSTACK_USER=... gulp test:remote
+</code></pre>
+</li>
+</ol>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/tony19-sandbox/wct-browserstack-demo">wct-browserstack-demo</a> is maintained by <a href="https://github.com/tony19-sandbox">tony19-sandbox</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
