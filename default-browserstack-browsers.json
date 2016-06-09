@@ -1,0 +1,9 @@
+[
+  {
+    "browserName"     : "chrome",
+    "os"              : "windows",
+    "os_version"      : "10",
+    "browser_version" : "51.0",
+    "resolution"      : "1024x768"
+  }
+]
