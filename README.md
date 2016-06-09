@@ -88,6 +88,6 @@ Prefer the hard way?
           ]
         };
 
-  4. From a terminal, run:
+4. From a terminal, run:
 
-          $ BROWSERSTACK_KEY=... BROWSERSTACK_USER=... gulp test:remote
+        $ BROWSERSTACK_KEY=... BROWSERSTACK_USER=... gulp test:remote
