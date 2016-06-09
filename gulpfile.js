@@ -27,6 +27,7 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 var ensureFiles = require('./tasks/ensure-files.js');
+var browserStack = require('gulp-browserstack');
 
 // var ghPages = require('gulp-gh-pages');
 
@@ -294,6 +295,48 @@ gulp.task('deploy-gh-pages', function() {
       silent: true,
       branch: 'gh-pages'
     }), $.ghPages()));
+});
+
+// Converts a through2 object into a Promise
+// TODO: Find through2 API to convert to promise.
+function throughObjToPromise(obj) {
+  var p = new Promise(function(resolve, reject) {
+    var fn = obj._transform;
+    fn('', '', function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+  return p;
+}
+
+// Runs WCT on BrowserStack. Requires two environment variables:
+// BROWSERSTACK_KEY and BROWSERSTACK_USER.
+gulp.task('wct:browserstack', function(cb) {
+  runSequence(
+    'starttunnel',
+
+    // "wct:sauce" is currently the name of the task that WCT uses to start tests.
+    // The name does not imply a requirement of SauceLabs.
+    'wct:sauce',
+
+    'stoptunnel',
+    cb);
+});
+
+// Starts BrowserStack tunnel
+gulp.task('starttunnel', function() {
+  return throughObjToPromise(browserStack.startTunnel({
+    key: process.env.BROWSERSTACK_KEY
+  }));
+});
+
+// Stops BrowserStack tunnel
+gulp.task('stoptunnel', function() {
+  return throughObjToPromise(browserStack.stopTunnel());
 });
 
 // Load tasks for web-component-tester
